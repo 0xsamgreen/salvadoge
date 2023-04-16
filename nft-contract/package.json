@@ -1,0 +1,22 @@
+{
+  "name": "hardhat-project",
+  "devDependencies": {
+    "hardhat": "^2.14.0"
+  },
+  "dependencies": {
+    "@nomiclabs/hardhat-waffle": "^2.0.5",
+    "@openzeppelin/contracts": "^4.8.3",
+    "@openzeppelin/hardhat-upgrades": "^1.22.1",
+    "chai": "^4.3.7",
+    "dotenv": "^16.0.3",
+    "ethereum-waffle": "^4.0.10",
+    "ethers": "^5.7.2",
+    "hardhat-dependency-compiler": "^1.1.3"
+  },
+  "scripts": {
+    "compile": "hardhat compile",
+    "postcompile": "node copyABI.js",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.js"
+  }
+}
