@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
 
 async function main() {
   const [deployer] = await ethers.getSigners();

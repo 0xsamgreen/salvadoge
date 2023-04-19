@@ -3,9 +3,6 @@ import axios from 'axios';
 import Web3 from 'web3';
 import './App.css';
 import AIGeneratedNFT from './AIGeneratedNFT.json';
-import { ethers } from 'ethers';
-
-
 
 function App() {
   const [setting, setSetting] = useState('');
@@ -29,58 +26,37 @@ function App() {
       console.error('Error generating images:', error);
     }
   };
-  
+ 
   const initializeWeb3 = async () => {
     if (window.ethereum) {
       try {
-        const provider = new ethers.BrowserProvider(window.ethereum);
+        const web3 = new Web3(window.ethereum);
         await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const signer = provider.getSigner();
-        const account = await signer.getAddress();
-        return { provider, signer, account };
+        const accounts = await web3.eth.getAccounts();
+        const account = accounts[0];
+        return { web3, account };
       } catch (error) {
         console.error('Error connecting to MetaMask:', error);
       }
     } else {
       console.error('MetaMask is not installed.');
     }
-  
+
     return null;
   };
-  
 
-  const mintNFT = async (image) => {
-    const { provider, signer, account } = await initializeWeb3();
-  
-    if (!provider || !signer || !account) {
+  const mintNFT = async (image) => { const { web3, account } = await initializeWeb3();
+
+    if (!web3 || !account) {
       console.error('Error initializing Web3 or MetaMask account.');
       return;
     }
-  
-    try {
-      // Here, we'll call the backend API to mint the NFT
-      const response = await axios.post('http://localhost:5000/api/mint', { image, account });
-      const { tokenId, contractAddress } = response.data;
-  
-      // Now, we'll ask the user to confirm the minting transaction in MetaMask
-      const contract = new ethers.Contract(contractAddress, AIGeneratedNFT.abi, signer);
-  
-      const gas = await contract.estimateGas.mint(account, tokenId);
-      const result = await contract.mint(account, tokenId, { gasLimit: gas });
-  
-      if (result.status) {
-        console.log('Successfully minted NFT with token ID:', tokenId);
-      } else {
-        console.error('Error minting NFT:', result);
-      }
-    } catch (error) {
-      console.error('Error minting NFT:', error);
-    }
-  };  
+
+  };
   
   return (
     <div className="App">
-      <h1>AI-Generated NFTs</h1>
+      <h1>Salvadoge 0.1</h1>
       <div className="inputs">
         <input
           type="text"
