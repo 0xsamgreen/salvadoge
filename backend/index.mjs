@@ -92,7 +92,7 @@ app.post('/api/mint', async (req, res) => {
 
     res.json({
       tokenId: tokenId, // The actual tokenId from the mint function
-      contractAddress: '0x123456...', // Replace with the actual contractAddress
+      contractAddress: '0x5FbDB2315678afecb367f032d93F642f64180aa3', // Replace with the actual contractAddress
     });
   } catch (error) {
     res.status(500).json({ error: 'Error minting NFT' });
@@ -103,3 +103,24 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+async function initializeWeb3Client() {
+  if (typeof window.ethereum !== 'undefined') {
+    const web3 = new Web3(window.ethereum);
+    try {
+      // Request account access if needed
+      await window.ethereum.enable();
+      // Get the user's account
+      const accounts = await web3.eth.getAccounts();
+      const account = accounts[0];
+
+      return { web3, account };
+    } catch (error) {
+      console.error('Error enabling Ethereum or getting accounts:', error);
+    }
+  } else {
+    console.error('Non-Ethereum browser detected. You should consider trying MetaMask!');
+  }
+}
+
+export { initializeWeb3Client };

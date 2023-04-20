@@ -3,6 +3,13 @@ import axios from 'axios';
 import Web3 from 'web3';
 import './App.css';
 import AIGeneratedNFT from './AIGeneratedNFT.json';
+import { initializeWeb3Client } from './web3Util';
+
+import contractABI from './AIGeneratedNFT.json';
+
+console.log('Imported contractABI:', contractABI);
+
+const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'; // Replace with your actual contract address
 
 function App() {
   const [setting, setSetting] = useState('');
@@ -45,14 +52,46 @@ function App() {
     return null;
   };
 
-  const mintNFT = async (image) => { const { web3, account } = await initializeWeb3();
-
+  const mintNFT = async (image) => {
+    const { web3, account } = await initializeWeb3Client();
+  
     if (!web3 || !account) {
       console.error('Error initializing Web3 or MetaMask account.');
       return;
     }
+  
+    console.log('Using contractABI:', contractABI);
+    console.log('Using contractAddress:', contractAddress);    
 
+    try {
+      // Fetch the contract instance
+      const contractInstance = new web3.eth.Contract(AIGeneratedNFT, contractAddress);
+  
+      // Call the backend API to mint the NFT
+      const response = await fetch('/api/mint', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          imageId: image.id,
+          account: account,
+        }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        const { tokenId, contractAddress } = data;
+  
+        console.log(`NFT minted! Token ID: ${tokenId}, contract address: ${contractAddress}`);
+      } else {
+        console.error('Error minting NFT:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error minting NFT:', error);
+    }
   };
+
   
   return (
     <div className="App">
