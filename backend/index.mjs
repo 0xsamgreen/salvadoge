@@ -5,10 +5,27 @@ import dotenv from 'dotenv';
 import { create } from 'ipfs-http-client';
 import crypto from 'crypto';
 import Web3 from 'web3';
+import fs from 'fs';
+import { promisify } from 'util';
+
+const readFile = promisify(fs.readFile);
+
+async function loadABI(file) {
+  const data = await readFile(file, 'utf8');
+  return JSON.parse(data);
+}
 
 dotenv.config({ path: '../.env' });
 
-const ipfsClient = create({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' });
+const ipfsClient = create({
+  host: 'ipfs.infura.io',
+  port: '5001',
+  protocol: 'https',
+  headers: {
+    authorization: `Basic ${Buffer.from(`${process.env.INFURA_PROJECT_ID}:${process.env.INFURA_PROJECT_SECRET}`).toString('base64')}`,
+  },
+});
+
 const imageMap = new Map();
 
 const app = express();
@@ -17,10 +34,10 @@ app.use(cors());
 app.use(express.json());
 
 const API_KEY = process.env.OPENAI_API_KEY;
-const ownerPrivateKey = process.env.OWNER_PRIVATE_KEY; // Set this in your .env file
-const CONTRACT_ADDRESS = '0x5FbDB2315678afecb367f032d93F642f64180aa3'; // Replace with your actual contract address
+const ownerPrivateKey = process.env.PRIVATE_KEY; // Set this in your .env file
+const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS; // Set this in your .env file
 
-const web3 = new Web3(process.env.INFURA_RPC_URL); // Set this in your .env file, it should look like `https://mainnet.infura.io/v3/YOUR-PROJECT-ID`
+const web3 = new Web3(process.env.ALCHEMY_RPC_URL); // Set this in your .env file
 
 app.post('/generate-images', async (req, res) => {
   const { setting, verb } = req.body;
@@ -59,8 +76,8 @@ app.post('/generate-images', async (req, res) => {
   }
 });
 
-app.post('/api/mint', async (req, res) => {
-  const { imageId, account, contractABI } = req.body;
+app.post('/mint', async (req, res) => {
+  const { imageId, account } = req.body;
 
   const imageUrl = imageMap.get(imageId);
   if (!imageUrl) {
@@ -87,17 +104,25 @@ app.post('/api/mint', async (req, res) => {
     const metadataCID = metadataResult.path;
     const ipfsMetadataUrl = `https://ipfs.io/ipfs/${metadataCID}`;
 
-    const contractInstance = new web3.eth.Contract(contractABI, CONTRACT_ADDRESS);
+    // Load the ABI
+    const AIGeneratedNFT_ABI = await loadABI('./AIGeneratedNFT_ABI.json');
+    console.log('Loaded ABI');
 
-    const nonce = await contractInstance.methods.getNonce().call();
+    // Create the contract instance
+    const contractInstance = new web3.eth.Contract(AIGeneratedNFT_ABI.abi, CONTRACT_ADDRESS);
+    console.log('Created contract instance');
+
+    const nonce = await contractInstance.methods.getNonce(account).call();
+    console.log('Got nonce', nonce);
+
     const messageHash = web3.utils.soliditySha3(
       account, ipfsMetadataUrl, nonce, CONTRACT_ADDRESS
     );
-    const signature = await web3.eth.accounts.sign(messageHash, ownerPrivateKey);
+
+    console.log('messageHash:', messageHash);
 
     res.json({
       metadataUrl: ipfsMetadataUrl,
-      signature: signature.signature,
       nonce: nonce,
       messageHash: messageHash,
     });
@@ -110,5 +135,5 @@ app.post('/api/mint', async (req, res) => {
     
     const PORT = process.env.PORT || 3001;
     app.listen(PORT, () => {
-    console.log('Server listening on port ${PORT}');
+    console.log(`Server listening on port ${PORT}`);
     });

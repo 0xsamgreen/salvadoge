@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import Web3 from 'web3';
 import './App.css';
-import AIGeneratedNFT from './AIGeneratedNFT.json';
+import AIGeneratedNFT_ABI from './AIGeneratedNFT.json';
 import { initializeWeb3Client } from './web3Util';
 
-const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'; // Replace with your actual contract address
+const contractAddress = '0x0A777Ee90519f54FE0116576B5d0F6D6633Ab723'; // Replace with your actual contract address
 
 function App() {
   const [setting, setSetting] = useState('');
@@ -32,18 +31,18 @@ function App() {
 
   const mintNFT = async (image) => {
     const { web3, account } = await initializeWeb3Client();
-
+  
     if (!web3 || !account) {
       console.error('Error initializing Web3 or MetaMask account.');
       return;
     }
-
+  
     try {
       // Fetch the contract instance
-      const contractInstance = new web3.eth.Contract(AIGeneratedNFT, contractAddress);
-
-      // Call the backend API to mint the NFT
-      const response = await fetch('/api/mint', {
+      const contractInstance = new web3.eth.Contract(AIGeneratedNFT_ABI.abi, contractAddress);
+  
+      // Call the backend API to get the message hash and nonce
+      const response = await fetch('http://localhost:3001/mint', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,19 +50,21 @@ function App() {
         body: JSON.stringify({
           imageId: image.id,
           account: account,
-          contractABI: AIGeneratedNFT,
         }),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
-        const { metadataUrl, signature, nonce, messageHash } = data;
-
+        const { metadataUrl, nonce, messageHash } = data;
+  
+        // Request the user to sign the message using MetaMask
+        const signature = await web3.eth.personal.sign(messageHash, account);
+  
         // Call the smart contract mintWithSignature method with the signed data
         await contractInstance.methods
           .mintWithSignature(account, metadataUrl, signature, nonce)
           .send({ from: account, gas: 500000 });
-
+  
         console.log('NFT minted! Metadata URL:', metadataUrl);
       } else {
         console.error('Error minting NFT:', response.statusText);
@@ -71,7 +72,7 @@ function App() {
     } catch (error) {
       console.error('Error minting NFT:', error);
     }
-  };
+  };  
 
   return (
     <div className="App">

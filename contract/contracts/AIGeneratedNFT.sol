@@ -17,6 +17,7 @@ contract AIGeneratedNFT is ERC1155 {
 
     mapping(uint256 => address) private _creators;
     mapping(uint256 => string) private _tokenURIs;
+    mapping(address => uint256) public nonces;
 
     event RoyaltyFeeUpdated(uint256 royaltyFee);
     event TokenMinted(uint256 tokenId);
@@ -32,6 +33,10 @@ contract AIGeneratedNFT is ERC1155 {
         _;
     }
 
+    function getNonce(address user) public view returns (uint256) {
+        return nonces[user];
+    }
+    
     function mint(address to, string memory tokenURI) public onlyOwner returns (uint256) {
         uint256 newTokenId = _currentTokenId;
         bytes memory data = ""; // Pass an empty bytes array as data
@@ -64,13 +69,17 @@ contract AIGeneratedNFT is ERC1155 {
         return _creators[tokenId] != address(0);
     }
 
-    function mintWithMetaTransaction(address to, string memory tokenURI, uint256 nonce, bytes memory signature) public {
+    function mintWithSignature(address to, string memory tokenURI, bytes memory signature, uint256 nonce) public {
         bytes32 messageHash = keccak256(abi.encodePacked(to, tokenURI, nonce, address(this)));
         bytes32 ethSignedMessageHash = ECDSA.toEthSignedMessageHash(messageHash);
         address signer = ECDSA.recover(ethSignedMessageHash, signature);
 
         require(signer == _owner, "AIGeneratedNFT: Invalid signature");
+        require(nonces[to] == nonce, "AIGeneratedNFT: Invalid nonce");
 
         mint(to, tokenURI);
+
+        // Increase the nonce for the user after successful minting
+        nonces[to]++;
     }
 }
