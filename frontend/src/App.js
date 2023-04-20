@@ -5,10 +5,6 @@ import './App.css';
 import AIGeneratedNFT from './AIGeneratedNFT.json';
 import { initializeWeb3Client } from './web3Util';
 
-import contractABI from './AIGeneratedNFT.json';
-
-console.log('Imported contractABI:', contractABI);
-
 const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'; // Replace with your actual contract address
 
 function App() {
@@ -33,40 +29,19 @@ function App() {
       console.error('Error generating images:', error);
     }
   };
- 
-  const initializeWeb3 = async () => {
-    if (window.ethereum) {
-      try {
-        const web3 = new Web3(window.ethereum);
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const accounts = await web3.eth.getAccounts();
-        const account = accounts[0];
-        return { web3, account };
-      } catch (error) {
-        console.error('Error connecting to MetaMask:', error);
-      }
-    } else {
-      console.error('MetaMask is not installed.');
-    }
-
-    return null;
-  };
 
   const mintNFT = async (image) => {
     const { web3, account } = await initializeWeb3Client();
-  
+
     if (!web3 || !account) {
       console.error('Error initializing Web3 or MetaMask account.');
       return;
     }
-  
-    console.log('Using contractABI:', contractABI);
-    console.log('Using contractAddress:', contractAddress);    
 
     try {
       // Fetch the contract instance
       const contractInstance = new web3.eth.Contract(AIGeneratedNFT, contractAddress);
-  
+
       // Call the backend API to mint the NFT
       const response = await fetch('/api/mint', {
         method: 'POST',
@@ -76,14 +51,20 @@ function App() {
         body: JSON.stringify({
           imageId: image.id,
           account: account,
+          contractABI: AIGeneratedNFT,
         }),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
-        const { tokenId, contractAddress } = data;
-  
-        console.log(`NFT minted! Token ID: ${tokenId}, contract address: ${contractAddress}`);
+        const { metadataUrl, signature, nonce, messageHash } = data;
+
+        // Call the smart contract mintWithSignature method with the signed data
+        await contractInstance.methods
+          .mintWithSignature(account, metadataUrl, signature, nonce)
+          .send({ from: account, gas: 500000 });
+
+        console.log('NFT minted! Metadata URL:', metadataUrl);
       } else {
         console.error('Error minting NFT:', response.statusText);
       }
@@ -92,7 +73,6 @@ function App() {
     }
   };
 
-  
   return (
     <div className="App">
       <h1>Salvadoge 0.1</h1>
@@ -112,12 +92,12 @@ function App() {
       </div>
       <button onClick={generateImages}>Generate</button>
       <div className="images">
-      {images.map((image, index) => (
-        <div key={index}>
-          <img src={image.url} alt={`Generated image ${index + 1}`} />
+        {images.map((image, index) => (
+          <div key={index}>
+          <img src={image.url} alt={'Generated image ${index + 1}'} />
           <button onClick={() => mintNFT(image)}>Mint</button>
-        </div>
-      ))}
+          </div>
+        ))}
       </div>
     </div>
   );
