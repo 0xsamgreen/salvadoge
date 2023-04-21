@@ -1,52 +1,75 @@
 .App {
+  font-family: 'Roboto', sans-serif;
   text-align: center;
-}
-
-h1 {
-  margin-top: 3rem;
+  background-color: #fff;
+  color: #333;
+  min-height: 100vh;
 }
 
 .inputs {
   display: flex;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 2rem;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
 input {
+  font-family: 'Roboto', sans-serif;
+  border: 1px solid #ccc;
+  border-radius: 4px;
   padding: 0.5rem;
-  font-size: 1rem;
+  margin-right: 1rem;
 }
 
 button {
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  cursor: pointer;
-  background-color: #4caf50;
+  background-color: #3f51b5;
   border: none;
+  border-radius: 4px;
   color: white;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  transition-duration: 0.4s;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #303f9f;
 }
 
 .images {
   display: flex;
   justify-content: center;
-  gap: 1rem;
   flex-wrap: wrap;
+}
+
+.image-wrapper {
+  position: relative;
+  flex-basis: 33.3333%;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 512px;
+  max-height: 512px;
+  width: 100%;
+  height: auto;
+  background-color: #ccc;
+  object-fit: contain;
+}
+
+.wallet-info {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.debug {
+  text-align: left;
+  font-size: 0.8rem;
+  color: #666;
   margin-top: 2rem;
 }
 
-.images > div {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  align-items: center;
+body, html {
+  margin: 0;
+  padding: 0;
 }

@@ -34,16 +34,15 @@ app.use(cors());
 app.use(express.json());
 
 const API_KEY = process.env.OPENAI_API_KEY;
-const ownerPrivateKey = process.env.PRIVATE_KEY; // Set this in your .env file
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS; // Set this in your .env file
 
 const web3 = new Web3(process.env.ALCHEMY_RPC_URL); // Set this in your .env file
 
 app.post('/generate-images', async (req, res) => {
-  const { setting, verb } = req.body;
-  console.log(`Photograph of a ${setting} ${verb}`);
+  const { description } = req.body;
 
-  const prompt = `Create an image of a ${setting} scene with a ${verb} action`;
+  const prompt = `art gallery photograph of a gleaming highly detailed shiny solid gold ${description} amulet`;
+  console.log(prompt)
 
   try {
     const response = await axios.post(
@@ -52,7 +51,7 @@ app.post('/generate-images', async (req, res) => {
         model: 'image-alpha-001',
         size: '512x512',
         prompt,
-        n: 1,
+        n: 3,
       },
       {
         headers: {
@@ -115,16 +114,22 @@ app.post('/mint', async (req, res) => {
     const nonce = await contractInstance.methods.getNonce(account).call();
     console.log('Got nonce', nonce);
 
+    const PRIVATE_KEY = process.env.BACKEND_PRIVATE_KEY;
+    //const BACKEND_ADDRESS = process.env.BACKEND_ADDRESS;    
+
     const messageHash = web3.utils.soliditySha3(
       account, ipfsMetadataUrl, nonce, CONTRACT_ADDRESS
     );
-
+  
     console.log('messageHash:', messageHash);
-
+  
+    // Sign the message hash with the backend's private key
+    const signature = web3.eth.accounts.sign(messageHash, PRIVATE_KEY);
+    
     res.json({
       metadataUrl: ipfsMetadataUrl,
       nonce: nonce,
-      messageHash: messageHash,
+      signature: signature.signature 
     });
     
   } catch (error) {

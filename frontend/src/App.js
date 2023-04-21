@@ -1,31 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './App.css';
 import AIGeneratedNFT_ABI from './AIGeneratedNFT.json';
 import { initializeWeb3Client } from './web3Util';
+import './App.css';
+import './spinner.css'; 
 
-const contractAddress = '0x0A777Ee90519f54FE0116576B5d0F6D6633Ab723'; // Replace with your actual contract address
+const contractAddress = '0x411e067FCc1dc372F43f38C35549DEcF6C05026a'; 
 
 function App() {
-  const [setting, setSetting] = useState('');
-  const [verb, setVerb] = useState('');
+  const [description, setDescription] = useState('');
   const [images, setImages] = useState([]);
-
+  const [loading, setLoading] = useState(true);
+  const [account, setAccount] = useState(null);
+  
+  useEffect(() => {
+    async function init() {
+      const { account } = await initializeWeb3Client();
+      setAccount(account);
+    }
+    
+    setDescription("banana");
+    init();
+  }, []);
+  
   const generateImages = async () => {
+    setLoading(true);
     try {
       const response = await axios.post('http://localhost:3001/generate-images', {
-        setting: setting,
-        verb: verb,
+        description: description,
       });
-  
+
       const newImages = response.data.map((image) => ({
         id: image.id,
         url: image.url,
       }));
-  
+
       setImages(newImages);
     } catch (error) {
       console.error('Error generating images:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,19 +66,16 @@ function App() {
           account: account,
         }),
       });
-  
+ 
       if (response.ok) {
         const data = await response.json();
-        const { metadataUrl, nonce, messageHash } = data;
+        const { metadataUrl, nonce, signature } = data;
   
-        // Request the user to sign the message using MetaMask
-        const signature = await web3.eth.personal.sign(messageHash, account);
-  
-        // Call the smart contract mintWithSignature method with the signed data
+        // Use the signature returned by the backend
         await contractInstance.methods
           .mintWithSignature(account, metadataUrl, signature, nonce)
           .send({ from: account, gas: 500000 });
-  
+    
         console.log('NFT minted! Metadata URL:', metadataUrl);
       } else {
         console.error('Error minting NFT:', response.statusText);
@@ -77,26 +88,22 @@ function App() {
   return (
     <div className="App">
       <h1>Salvadoge 0.1</h1>
+      {account && <div className="wallet-info">Connected to: {account.slice(0, 10)}...</div>}
       <div className="inputs">
         <input
           type="text"
-          placeholder="Setting"
-          value={setting}
-          onChange={(e) => setSetting(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Verb"
-          value={verb}
-          onChange={(e) => setVerb(e.target.value)}
+          placeholder="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
         />
       </div>
       <button onClick={generateImages}>Generate</button>
       <div className="images">
         {images.map((image, index) => (
-          <div key={index}>
-          <img src={image.url} alt={'Generated image ${index + 1}'} />
-          <button onClick={() => mintNFT(image)}>Mint</button>
+          <div key={index} className="image-wrapper">
+            {loading && <div className="spinner"></div>}
+            <img src={image.url || ''} alt={`Generated image ${index + 1}`} />
+            <button onClick={() => mintNFT(image)}>Mint</button>
           </div>
         ))}
       </div>
@@ -104,4 +111,7 @@ function App() {
   );
 }
 
-export default App;
+export default App;   
+      
+      
+      

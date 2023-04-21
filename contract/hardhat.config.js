@@ -3,7 +3,7 @@ require("@openzeppelin/hardhat-upgrades");
 require("hardhat-dependency-compiler");
 require('dotenv').config({ path: '../.env' });
 
-const {PRIVATE_KEY, API_KEY} = process.env;
+const {ALCHEMY_PRIVATE_KEY, ALCHEMY_API_KEY, BACKEND_PRIVATE_KEY} = process.env;
 
 module.exports = {
   solidity: "0.8.1",
@@ -13,8 +13,8 @@ module.exports = {
     },
     sepolia: {
       chainId: 11155111,
-      url: `https://eth-sepolia.g.alchemy.com/v2/${API_KEY}`,
-      accounts: [`0x${PRIVATE_KEY}`]
+      url: `https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
+      accounts: [`0x${BACKEND_PRIVATE_KEY}`]
     },
     localhost: {
       url: "http://127.0.0.1:8545",
