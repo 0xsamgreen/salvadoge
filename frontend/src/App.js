@@ -5,13 +5,15 @@ import { initializeWeb3Client } from './web3Util';
 import './App.css';
 import './spinner.css'; 
 
-const contractAddress = '0x411e067FCc1dc372F43f38C35549DEcF6C05026a'; 
+const contractAddress = '0x319D0c95f06499f29775D370a042a4f72dAb885d'; 
 
 function App() {
   const [description, setDescription] = useState('');
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [account, setAccount] = useState(null);
+  const [mintingStatus, setMintingStatus] = useState('');
+
   
   useEffect(() => {
     async function init() {
@@ -19,12 +21,13 @@ function App() {
       setAccount(account);
     }
     
-    setDescription("banana");
+    setDescription("shiba inu");
     init();
   }, []);
   
   const generateImages = async () => {
     setLoading(true);
+    setMintingStatus('');
     try {
       const response = await axios.post('http://localhost:3001/generate-images', {
         description: description,
@@ -71,12 +74,14 @@ function App() {
         const data = await response.json();
         const { metadataUrl, nonce, signature } = data;
   
-        // Use the signature returned by the backend
-        await contractInstance.methods
+        const txReceipt = await contractInstance.methods
           .mintWithSignature(account, metadataUrl, signature, nonce)
           .send({ from: account, gas: 500000 });
-    
-        console.log('NFT minted! Metadata URL:', metadataUrl);
+      
+        const txUrl = `https://sepolia.etherscan.io/tx/${txReceipt.transactionHash}`;
+        setMintingStatus(`${txUrl}`);
+
+        console.log('NFT minted:', response.statusText);
       } else {
         console.error('Error minting NFT:', response.statusText);
       }
@@ -107,6 +112,9 @@ function App() {
           </div>
         ))}
       </div>
+      <a className="minting-status" href={mintingStatus} target="_blank" rel="noopener noreferrer">
+        {mintingStatus}
+      </a>
     </div>
   );
 }
