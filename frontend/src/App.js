@@ -94,6 +94,7 @@ function App() {
     <div className="App">
       <h1>Salvadoge 0.1</h1>
       {account && <div className="wallet-info">Connected to: {account.slice(0, 10)}...</div>}
+
       <div className="inputs">
         <input
           type="text"
@@ -101,8 +102,9 @@ function App() {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
+        <button onClick={generateImages}>Generate</button> 
       </div>
-      <button onClick={generateImages}>Generate</button>
+  
       <div className="images">
         {images.map((image, index) => (
           <div key={index} className="image-wrapper">
