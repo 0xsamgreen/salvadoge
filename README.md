@@ -89,11 +89,9 @@ cp artifacts/contracts/AIGeneratedNFT.sol/AIGeneratedNFT.json ../backend
 npx hardhat run --network sepolia scripts/deploy.js
 ```
 
+3. Update the frontend and backend with the deployed contract address:
+
 Note the contract address output after deployment and update the `contractAddress` variable in `frontend/Apps.js` and the `CONTRACT_ADDRESS variable` in your `.env` file.
-
-3. Update the frontend with the deployed contract address:
-
-Open `frontend/src/App.js` in your favorite code editor and update the `contractAddress` constant with the address obtained in the previous step.
 
 4. Start the frontend development server:
 
