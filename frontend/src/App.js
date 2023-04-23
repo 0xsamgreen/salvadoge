@@ -9,12 +9,16 @@ const contractAddress = '0x319D0c95f06499f29775D370a042a4f72dAb885d';
 
 function App() {
   const [description, setDescription] = useState('');
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState([
+    { id: null, url: null },
+    { id: null, url: null },
+    { id: null, url: null }
+  ]);
   const [loading, setLoading] = useState(true);
   const [account, setAccount] = useState(null);
   const [mintingStatus, setMintingStatus] = useState('');
+  const [generated, setGenerated] = useState(false);
 
-  
   useEffect(() => {
     async function init() {
       const { account } = await initializeWeb3Client();
@@ -24,6 +28,13 @@ function App() {
     setDescription("shiba inu");
     init();
   }, []);
+
+  useEffect(() => {
+    if (!account) {
+      return;
+    }
+    generateImages();
+  }, [account]); // eslint-disable-line react-hooks/exhaustive-deps
   
   const generateImages = async () => {
     setLoading(true);
@@ -32,13 +43,14 @@ function App() {
       const response = await axios.post('http://localhost:3001/generate-images', {
         description: description,
       });
-
+  
       const newImages = response.data.map((image) => ({
         id: image.id,
         url: image.url,
       }));
-
+  
       setImages(newImages);
+      setGenerated(true); // Add this line
     } catch (error) {
       console.error('Error generating images:', error);
     } finally {
@@ -104,16 +116,21 @@ function App() {
         />
         <button onClick={generateImages}>Generate</button> 
       </div>
-  
+
       <div className="images">
         {images.map((image, index) => (
           <div key={index} className="image-wrapper">
             {loading && <div className="spinner"></div>}
-            <img src={image.url || ''} alt={`Generated image ${index + 1}`} />
-            <button onClick={() => mintNFT(image)}>Mint</button>
+            {image.url ? (
+              <img src={image.url} alt={`Generated ${index + 1}`} />
+            ) : (
+              <div className="default"></div>
+            )}
+            {generated && <button onClick={() => mintNFT(image)}>Mint</button>}
           </div>
         ))}
       </div>
+
       <a className="minting-status" href={mintingStatus} target="_blank" rel="noopener noreferrer">
         {mintingStatus}
       </a>
