@@ -125,7 +125,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Salvadoge 0.1</h1>
+      <h1>Salvadoge</h1>
       <p className="subtitle">
         An <a href="https://github.com/0xsamgreen/web3-nft-ai" target="_blank" rel="noopener noreferrer">open-source</a> generative AI NFT project.
       </p>

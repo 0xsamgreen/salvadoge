@@ -1,70 +1,80 @@
-# Getting Started with Create React App
+# Salvadoge
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Salvadoge is an open-source generative AI NFT project that allows users to create and mint NFTs based on generated images using user-provided descriptions.
 
-## Available Scripts
+## Prerequisites
 
-In the project directory, you can run:
+Make sure you have the following tools installed on your system:
 
-### `npm start`
+1. Node.js (v16.0.0): You can download and install the specific version from the [official Node.js website](https://nodejs.org/en/download/releases/) or use a version manager like `nvm` or `n` to manage multiple Node.js versions on your machine. To install Node.js v16.0.0 using `nvm`, you can run:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```
+nvm install 16.0.0
+nvm use 16.0.0
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Installation
 
-### `npm test`
+1. Clone the repository:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+git clone git@github.com:0xsamgreen/web3-nft-ai.git
+cd salvadoge
+```
 
-### `npm run build`
+2. Install dependencies for the backend, contract, and frontend:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```
+cd backend
+yarn install
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+cd ../contract
+yarn install
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+cd ../frontend
+yarn install
+```
 
-### `npm run eject`
+## Running the Project
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1. Start the backend server:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+cd backend
+yarn start
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+2. Deploy the smart contract:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+In a separate terminal, navigate to the `contract` directory and deploy the smart contract using Hardhat:
 
-## Learn More
+```
+cd contract
+npx hardhat run scripts/deploy.js --network localhost
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Note the contract address output after deployment.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+3. Update the frontend with the deployed contract address:
 
-### Code Splitting
+Open `frontend/src/App.js` in your favorite code editor and update the `contractAddress` constant with the address obtained in the previous step.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+4. Start the frontend development server:
 
-### Analyzing the Bundle Size
+```
+cd frontend
+yarn start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+The frontend should now be running on `http://localhost:3000`.
 
-### Making a Progressive Web App
+5. Connect your MetaMask wallet to the app and start generating and minting NFTs!
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Advanced Configuration
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+This project is open-source and available under the [MIT License](LICENSE).
 
-### Deployment
+## Disclaimer
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This code is provided for educational purposes only and is not intended for production use. The code may contain vulnerabilities or issues that could lead to loss of funds or other unintended consequences. It is strongly recommended that you do not use this code with non-testnet tokens or deploy it in any environment where real-world assets are involved. Use this code at your own risk.
