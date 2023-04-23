@@ -19,6 +19,7 @@ function App() {
   const [mintingStatus, setMintingStatus] = useState('');
   const [generated, setGenerated] = useState(false);
   const [consoleMessages, setConsoleMessages] = useState([]);
+  const [web3AccountInfo, setWeb3AccountInfo] = useState(null);
 
   const appendToConsole = (message) => {
     setConsoleMessages((prevMessages) => [message, ...prevMessages]);
@@ -26,11 +27,12 @@ function App() {
 
   useEffect(() => {
     async function init() {
-      const { account } = await initializeWeb3Client();
-      setAccount(account);
-      appendToConsole(`> Connected to: ${account}`);
+      const web3AccountInfo = await initializeWeb3Client();
+      setWeb3AccountInfo(web3AccountInfo);
+      setAccount(web3AccountInfo.account);
+      appendToConsole(`> Connected to: ${web3AccountInfo.account}`);
     }
-    
+
     setDescription("shiba inu");
     init();
   }, []);
@@ -67,7 +69,7 @@ function App() {
   };
 
   const mintNFT = async (image) => {
-    const { web3, account } = await initializeWeb3Client();
+    const { web3, account } = web3AccountInfo;
   
     if (!web3 || !account) {
       appendToConsole(`> Error initializing Web3 or MetaMask account.`)
