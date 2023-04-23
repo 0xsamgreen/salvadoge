@@ -109,7 +109,7 @@ app.post('/mint', async (req, res) => {
     const ipfsMetadataUrl = `https://ipfs.io/ipfs/${metadataCID}`;
 
     // Load the ABI
-    const AIGeneratedNFT_ABI = await loadABI('./AIGeneratedNFT_ABI.json');
+    const AIGeneratedNFT_ABI = await loadABI('./AIGeneratedNFT.json');
     console.log('Loaded ABI');
 
     // Create the contract instance
