@@ -2,6 +2,8 @@
 
 Salvadoge is a generative AI NFT project that allows users to create and mint NFTs based on generated images using user-provided descriptions.
 
+https://user-images.githubusercontent.com/7946320/233821886-32821e3a-4cc1-493d-b3fe-16bff627d306.mov
+
 ## Prerequisites
 
 Make sure you have the following tools installed on your system:
