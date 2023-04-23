@@ -107,3 +107,19 @@ body {
   background-position: center;
 }
 
+
+.console {
+  background-color: #000;
+  color: #0f0;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  width: calc(33.3333% * 2);
+  margin: 0 auto;
+  padding: 1rem;
+  box-sizing: border-box;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  overflow-x: hidden; /* Add this line */
+  text-align: left;
+  opacity: 0.75;
+}

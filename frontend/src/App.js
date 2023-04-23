@@ -18,17 +18,24 @@ function App() {
   const [account, setAccount] = useState(null);
   const [mintingStatus, setMintingStatus] = useState('');
   const [generated, setGenerated] = useState(false);
+  const [consoleMessages, setConsoleMessages] = useState([]);
+
+  const appendToConsole = (message) => {
+    setConsoleMessages((prevMessages) => [message, ...prevMessages]);
+  };
 
   useEffect(() => {
     async function init() {
       const { account } = await initializeWeb3Client();
       setAccount(account);
+      appendToConsole(`> Connected to: ${account}`);
     }
     
     setDescription("shiba inu");
     init();
   }, []);
 
+  // Needed this to prevent double generation of images on page load
   useEffect(() => {
     if (!account) {
       return;
@@ -40,6 +47,7 @@ function App() {
     setLoading(true);
     setMintingStatus('');
     try {
+      appendToConsole(`> Generating images with description: "${description}"`); 
       const response = await axios.post('http://localhost:3001/generate-images', {
         description: description,
       });
@@ -52,7 +60,7 @@ function App() {
       setImages(newImages);
       setGenerated(true); // Add this line
     } catch (error) {
-      console.error('Error generating images:', error);
+      appendToConsole(`> Error generating images: ${error}`);
     } finally {
       setLoading(false);
     }
@@ -62,12 +70,13 @@ function App() {
     const { web3, account } = await initializeWeb3Client();
   
     if (!web3 || !account) {
-      console.error('Error initializing Web3 or MetaMask account.');
+      appendToConsole(`> Error initializing Web3 or MetaMask account.`)
       return;
     }
   
     try {
       // Fetch the contract instance
+      appendToConsole(`> Getting contract ABI.`)
       const contractInstance = new web3.eth.Contract(AIGeneratedNFT_ABI.abi, contractAddress);
   
       // Call the backend API to get the message hash and nonce
@@ -93,22 +102,31 @@ function App() {
         const txUrl = `https://sepolia.etherscan.io/tx/${txReceipt.transactionHash}`;
         setMintingStatus(`${txUrl}`);
 
-        console.log('NFT minted:', response.statusText);
+        appendToConsole(`> NFT minted: ${response.statusText}`)
       } else {
-        console.error('Error minting NFT:', response.statusText);
+        appendToConsole(`> Error minting NFT: ${response.statusText}`)
       }
     } catch (error) {
-      console.error('Error minting NFT:', error);
+      appendToConsole(`> Error minting NFT: ${error}`)
     }
+  };  
+
+  const ConsoleArea = () => {
+    return (
+      <div className="console">
+        {consoleMessages.map((message, index) => (
+          <div key={index}>{message}</div>
+        ))}
+      </div>
+    );
   };  
 
   return (
     <div className="App">
       <h1>Salvadoge 0.1</h1>
       <p className="subtitle">
-        An <a href="https://github.com/0xsamgreen/web3-nft-ai" target="_blank" rel="noopener noreferrer">open-source</a> experimental NFT project by <a href="https://semiotic.ai/" target="_blank" rel="noopener noreferrer">Semiotic Labs</a>.
+        An <a href="https://github.com/0xsamgreen/web3-nft-ai" target="_blank" rel="noopener noreferrer">open-source</a> generative AI NFT project.
       </p>
-      {account && <div className="wallet-info">Connected to: {account.slice(0, 10)}...</div>}
 
       <div className="inputs">
         <input
@@ -137,6 +155,7 @@ function App() {
       <a className="minting-status" href={mintingStatus} target="_blank" rel="noopener noreferrer">
         {mintingStatus}
       </a>
+      <ConsoleArea />
     </div>
   );
 }
