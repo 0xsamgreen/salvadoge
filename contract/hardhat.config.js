@@ -3,7 +3,7 @@ require("@openzeppelin/hardhat-upgrades");
 require("hardhat-dependency-compiler");
 require('dotenv').config({ path: '../.env' });
 
-const {ALCHEMY_PRIVATE_KEY, ALCHEMY_API_KEY, BACKEND_PRIVATE_KEY} = process.env;
+const {ALCHEMY_API_KEY, BACKEND_PRIVATE_KEY} = process.env;
 
 module.exports = {
   solidity: "0.8.1",
