@@ -16,7 +16,6 @@ function App() {
   ]);
   const [loading, setLoading] = useState(true);
   const [account, setAccount] = useState(null);
-  const [mintingStatus, setMintingStatus] = useState('');
   const [generated, setGenerated] = useState(false);
   const [consoleMessages, setConsoleMessages] = useState([]);
   const [web3AccountInfo, setWeb3AccountInfo] = useState(null);
@@ -47,7 +46,6 @@ function App() {
   
   const generateImages = async () => {
     setLoading(true);
-    setMintingStatus('');
     try {
       appendToConsole(`> Generating images with description: "${description}"`); 
       const response = await axios.post('http://localhost:3001/generate-images', {
@@ -82,6 +80,7 @@ function App() {
       const contractInstance = new web3.eth.Contract(AIGeneratedNFT_ABI.abi, contractAddress);
   
       // Call the backend API to get the message hash and nonce
+      appendToConsole(`> Requesting that backend stores the NFT to IPFS.`);
       const response = await fetch('http://localhost:3001/mint', {
         method: 'POST',
         headers: {
@@ -97,14 +96,15 @@ function App() {
         const data = await response.json();
         const { metadataUrl, nonce, signature } = data;
   
+        appendToConsole(`> Submitting transaction to blockchain.`);
         const txReceipt = await contractInstance.methods
           .mintWithSignature(account, metadataUrl, signature, nonce)
           .send({ from: account, gas: 500000 });
       
-        const txUrl = `https://sepolia.etherscan.io/tx/${txReceipt.transactionHash}`;
-        setMintingStatus(`${txUrl}`);
-
         appendToConsole(`> NFT minted: ${response.statusText}`)
+
+        const txUrl = `https://sepolia.etherscan.io/tx/${txReceipt.transactionHash}`;
+        appendToConsole(`> Blockchain explorer result: ${txUrl}`);
       } else {
         appendToConsole(`> Error minting NFT: ${response.statusText}`)
       }
@@ -153,10 +153,6 @@ function App() {
           </div>
         ))}
       </div>
-
-      <a className="minting-status" href={mintingStatus} target="_blank" rel="noopener noreferrer">
-        {mintingStatus}
-      </a>
       <ConsoleArea />
     </div>
   );
