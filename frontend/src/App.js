@@ -105,6 +105,9 @@ function App() {
   return (
     <div className="App">
       <h1>Salvadoge 0.1</h1>
+      <p className="subtitle">
+        An <a href="https://github.com/0xsamgreen/web3-nft-ai" target="_blank" rel="noopener noreferrer">open-source</a> experimental NFT project by <a href="https://semiotic.ai/" target="_blank" rel="noopener noreferrer">Semiotic Labs</a>.
+      </p>
       {account && <div className="wallet-info">Connected to: {account.slice(0, 10)}...</div>}
 
       <div className="inputs">

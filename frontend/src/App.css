@@ -5,6 +5,31 @@
   min-height: 100vh;
 }
 
+.App h1 {
+  text-align: left;
+  padding-left: 1rem;
+  padding-bottom: 0px;
+  margin-bottom: 0rem;
+}
+
+.App .subtitle {
+  font-size: 1rem;
+  font-weight: normal;
+  text-align: left;
+  padding-left: 1rem;
+  margin-top: 0;
+  padding-top: 0px;
+}
+
+.App .subtitle a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.App .subtitle a:hover {
+  color: #3f51b5;
+}
+
 .inputs {
   display: flex;
   justify-content: center;
@@ -81,3 +106,4 @@ body {
   background-size: cover;
   background-position: center;
 }
+
