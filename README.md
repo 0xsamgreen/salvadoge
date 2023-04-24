@@ -77,6 +77,8 @@ cd backend
 node index.mjs
 ```
 
+The server should now be running on `http://localhost:3001`.
+
 2. Build and deploy the smart contract:
 
 In a separate terminal, navigate to the `contract` directory and deploy the smart contract using Hardhat:
@@ -91,7 +93,7 @@ npx hardhat run --network sepolia scripts/deploy.js
 
 3. Update the frontend and backend with the deployed contract address:
 
-Note the contract address output after deployment and update the `contractAddress` variable in `frontend/Apps.js` and the `CONTRACT_ADDRESS variable` in your `.env` file.
+Note the contract address output after the contract deployment and update the `contractAddress` variable in `frontend/Apps.js` and the `CONTRACT_ADDRESS` variable in your `.env` file.
 
 4. Start the frontend development server:
 
