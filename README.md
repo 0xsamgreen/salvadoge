@@ -51,7 +51,7 @@ OPENAI_API_KEY=
 1. Clone the repository:
 
 ```
-git clone git@github.com:0xsamgreen/web3-nft-ai.git
+git clone git@github.com:0xsamgreen/salvadoge.git
 cd salvadoge
 ```
 
@@ -111,11 +111,10 @@ This project is open-source and available under the [MIT License](LICENSE).
 
 ## Disclaimer
 
-This project is for educational purposes only and should not be deployed or used in environments where real (non-testnet) tokens are involved. The code contains security vulnerabilities, including but not limited to:
+This project is for educational purposes only and should not be deployed or used in environments where real (non-testnet) tokens are involved. **The code contains security vulnerabilities**, including but not limited to:
 
 - Front-end users can mint their images multiple times.
 - The backend signing key is stored on the server, which is an insecure practice.
-- There may be other unknown vulnerabilities.
 
 By using this project, you acknowledge that you are doing so at your own risk and will not hold the authors or contributors liable for any potential security breaches or losses that may occur as a result of using this code.
 
